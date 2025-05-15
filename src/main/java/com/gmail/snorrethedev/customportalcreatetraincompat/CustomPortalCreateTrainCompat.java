@@ -3,7 +3,7 @@ package com.gmail.snorrethedev.customportalcreatetraincompat;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import com.simibubi.create.content.trains.track.AllPortalTracks;
-import com.simibubi.create.foundation.utility.BlockFace;
+import net.createmod.catnip.math.BlockFace;
 import com.simibubi.create.foundation.utility.Pair;
 import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.util.CustomPortalHelper;
