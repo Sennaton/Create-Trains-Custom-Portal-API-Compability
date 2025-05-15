@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import com.simibubi.create.content.trains.track.AllPortalTracks;
 import net.createmod.catnip.math.BlockFace;
-import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
+import net.createmod.catnip.data.Pair;
 import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.util.CustomPortalHelper;
 import net.kyrptonaught.customportalapi.util.CustomTeleporter;
