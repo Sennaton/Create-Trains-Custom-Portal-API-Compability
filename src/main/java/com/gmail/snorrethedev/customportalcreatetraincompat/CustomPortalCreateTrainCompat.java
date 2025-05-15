@@ -48,7 +48,7 @@ public class CustomPortalCreateTrainCompat {
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         event.enqueueWork(() -> {
-            CustomPortalApiRegistry.getAllPortalLinks().forEach(pl -> AllPortalTracks.tryRegisterIntegration(pl.getPortalBlock(), p -> createPortalTrackProvider(p, pl)));
+            CustomPortalApiRegistry.getAllPortalLinks().forEach(pl -> AllPortalTracks.RegisterIntegration(pl.getPortalBlock(), p -> createPortalTrackProvider(p, pl)));
         });
     }
 
