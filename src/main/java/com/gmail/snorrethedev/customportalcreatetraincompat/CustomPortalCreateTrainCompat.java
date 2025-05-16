@@ -1,10 +1,10 @@
 package com.gmail.snorrethedev.customportalcreatetraincompat;
 
 import com.mojang.logging.LogUtils;
+import com.simibubi.create.api.contraption.train.PortalTrackProvider;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
-import com.simibubi.create.content.trains.track.AllPortalTracks;
-import net.createmod.catnip.math.BlockFace;
 import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.math.BlockFace;
 import net.kyrptonaught.customportalapi.CustomPortalApiRegistry;
 import net.kyrptonaught.customportalapi.util.CustomPortalHelper;
 import net.kyrptonaught.customportalapi.util.CustomTeleporter;
@@ -26,9 +26,10 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import com.simibubi.create.content.trains.track.AllPortalTracks;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 @Mod(CustomPortalCreateTrainCompat.MODID)
@@ -48,13 +49,13 @@ public class CustomPortalCreateTrainCompat {
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         event.enqueueWork(() -> {
-            CustomPortalApiRegistry.getAllPortalLinks().forEach(pl -> AllPortalTracks.tryRegisterIntegration(pl.getPortalBlock(), p -> createPortalTrackProvider(p, pl)));
+        CustomPortalApiRegistry.getAllPortalLinks().forEach(pl -> PortalTrackProvider.REGISTRY.register(pl.getPortalBlock(), (p,face) -> createPortalTrackProvider(p, face, pl)));
         });
     }
 
-    private static Pair<ServerLevel, BlockFace> createPortalTrackProvider(Pair<ServerLevel, BlockFace> inbound, PortalLink portalLink) {
+    private static PortalTrackProvider.Exit createPortalTrackProvider(ServerLevel inbound, BlockFace face, PortalLink portalLink) {
         ResourceKey<Level> trainDepot = ResourceKey.create(Registries.DIMENSION, portalLink.dimID);
-        return CustomPortalCreateTrainCompat.standardPortalProvider(inbound, Level.OVERWORLD, trainDepot, (sl) -> CustomPortalCreateTrainCompat.wrapCustomTeleporter(inbound, portalLink));
+        return CustomPortalCreateTrainCompat.standardPortalProvider(Pair.of(inbound,face), Level.OVERWORLD, trainDepot, (sl) -> CustomPortalCreateTrainCompat.wrapCustomTeleporter(Pair.of(inbound,face), portalLink));
     }
 
     public static ITeleporter wrapCustomTeleporter(Pair<ServerLevel, BlockFace> inbound, PortalLink portalLink) {
@@ -84,9 +85,9 @@ public class CustomPortalCreateTrainCompat {
      * @param customPortalForcer
      * @return
      */
-    public static Pair<ServerLevel, BlockFace> standardPortalProvider(Pair<ServerLevel, BlockFace> inbound,
-                                                                      ResourceKey<Level> firstDimension, ResourceKey<Level> secondDimension,
-                                                                      Function<ServerLevel, ITeleporter> customPortalForcer) {
+    public static PortalTrackProvider.Exit standardPortalProvider(Pair<ServerLevel, BlockFace> inbound,
+                                                                  ResourceKey<Level> firstDimension, ResourceKey<Level> secondDimension,
+                                                                  Function<ServerLevel, ITeleporter> customPortalForcer) {
         ServerLevel level = inbound.getFirst();
         ResourceKey<Level> resourcekey = level.dimension() == secondDimension ? firstDimension : secondDimension;
         MinecraftServer minecraftserver = level.getServer();
@@ -118,7 +119,7 @@ public class CustomPortalCreateTrainCompat {
         if (targetDirection.getAxis() == otherPortalState.getValue(BlockStateProperties.AXIS))
             targetDirection = targetDirection.getClockWise();
         BlockPos otherPos = otherPortalPos.relative(targetDirection);
-        return Pair.of(otherLevel, new BlockFace(otherPos, targetDirection.getOpposite()));
+        return new PortalTrackProvider.Exit(otherLevel, new BlockFace(otherPos, targetDirection.getOpposite()));
     }
 
 }
